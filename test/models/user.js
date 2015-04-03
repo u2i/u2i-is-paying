@@ -13,12 +13,14 @@ describe("user model", function() {
   var user1;
 
   beforeEach(function(done) {
-    helper.clearDb(function() {
-      helper.factories.create('Student', function(err, createdUser) {
+    helper.clearDb()
+      .then(function() {
+        return helper.factories.create('Student')
+      })
+      .then(function(createdUser) {
         user1 = createdUser;
         done();
       });
-    });
   });
 
   describe('.verify', function() {

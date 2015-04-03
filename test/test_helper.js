@@ -10,15 +10,28 @@ var mongoose = require('mongoose'),
   async = require('async'),
   Keygrip = require('keygrip'),
   config = require('config'),
+  Q = require('q'),
   factories = require('./factories.js');
 
 module.exports.factories = factories;
 
 module.exports.clearDb = function(done) {
+  var deferred = Q.defer();
   async.each(mongoose.modelNames(), function(name, callback) {
       mongoose.model(name).remove({}, callback);
     },
-    done);
+    function(err) {
+      if (typeof done == 'function') {
+        done(err);
+      } else {
+        if (err) {
+          deferred.reject(new Error(err));
+        } else {
+          deferred.resolve();
+        }
+      }
+    });
+  return deferred.promise;
 };
 
 module.exports.idMap = function(array) {

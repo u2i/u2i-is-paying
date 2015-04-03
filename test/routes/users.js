@@ -18,8 +18,7 @@ describe('user routes', function() {
         .send({
           signature: 'asdf'
         })
-        .end(function(err, res) {
-          expect(err).to.be.null;
+        .then(function(res) {
           expect(res).to.have.status(400);
           done();
         });
@@ -33,8 +32,7 @@ describe('user routes', function() {
             ['asdf']
           ]
         })
-        .end(function(err, res) {
-          expect(err).to.be.null;
+        .then(function(res) {
           expect(res).to.have.status(400);
           done();
         });
@@ -49,8 +47,7 @@ describe('user routes', function() {
           ],
           signature: 'qwerty'
         })
-        .end(function(err, res) {
-          expect(err).to.be.null;
+        .then(function(res) {
           expect(res).to.have.status(401);
           done();
         });
@@ -81,8 +78,7 @@ describe('user routes', function() {
           ],
           signature: 'REGphBS+alcE0YOyG90pZxniV/zXnywIi4tHmTBWUco='
         })
-        .end(function(err, res) {
-          expect(err).to.be.null;
+        .then(function(res) {
           expect(res).to.have.status(200);
           done();
         });
@@ -91,69 +87,69 @@ describe('user routes', function() {
     it("creates the users and updates existing ones", function(done) {
       helper.clearDb(function() {
         helper.factories.create('Employee', {
-          email: 'testUser@test.com'
-        }, function(err, createdStudents) {
-          chai.request(app)
-            .post('/users/update')
-            .send({
-              data: [
-                ['TestUser1',
-                  'testUser@test.com',
-                  'D--',
-                  'Student',
-                  0.6,
-                  5000,
-                  6600,
-                  6500,
-                  4500,
-                  4200,
-                  8000,
-                  7000,
-                  1500,
-                  1,
-                  3,
-                  75
+            email: 'testUser@test.com'
+          })
+          .then(function(createdStudents) {
+            chai.request(app)
+              .post('/users/update')
+              .send({
+                data: [
+                  ['TestUser1',
+                    'testUser@test.com',
+                    'D--',
+                    'Student',
+                    0.6,
+                    5000,
+                    6600,
+                    6500,
+                    4500,
+                    4200,
+                    8000,
+                    7000,
+                    1500,
+                    1,
+                    3,
+                    75
+                  ],
+                  ['TestUser2',
+                    'testUser2@test.com',
+                    'D',
+                    'Contractor',
+                    0.6,
+                    9000,
+                    10000,
+                    7500,
+                    5500,
+                    500,
+                    9000,
+                    8000,
+                    1500,
+                    3,
+                    9,
+                    100
+                  ]
                 ],
-                ['TestUser2',
-                  'testUser2@test.com',
-                  'D',
-                  'Contractor',
-                  0.6,
-                  9000,
-                  10000,
-                  7500,
-                  5500,
-                  500,
-                  9000,
-                  8000,
-                  1500,
-                  3,
-                  9,
-                  100
-                ]
-              ],
-              signature: 'vEWVc4cZftpTr6qWo0aGSzOnp3AHg2D60lnd+n6ww14='
-            })
-            .end(function(err, res) {
-              expect(err).to.be.null;
-              expect(res).to.have.status(200);
-              User.find().sort('name').exec(function(err, users) {
-                expect(users[0].name).to.equal('TestUser1');
-                expect(users[0].email).to.equal('testUser@test.com');
-                expect(users[0].contract).to.equal('Student');
-                expect(users[0].employeeGrossSalary.full).to.equal(6600);
-                expect(users[0].employeeGrossSalary.reduced).to.equal(6500);
-                expect(users[0].numberOfShares).to.equal(3);
-                expect(users[1].name).to.equal('TestUser2');
-                expect(users[1].email).to.equal('testUser2@test.com');
-                expect(users[1].contract).to.equal('Contractor');
-                expect(users[1].employeeGrossSalary.full).to.equal(10000);
-                expect(users[1].employeeGrossSalary.reduced).to.equal(7500);
-                expect(users[1].numberOfShares).to.equal(9);
-                done();
+                signature: 'vEWVc4cZftpTr6qWo0aGSzOnp3AHg2D60lnd+n6ww14='
+              })
+              .then(function(res) {
+                expect(res).to.have.status(200);
+                User.find().sort('name').exec().then(function(users) {
+                  expect(users[0].name).to.equal('TestUser1');
+                  expect(users[0].email).to.equal('testUser@test.com');
+                  expect(users[0].contract).to.equal('Student');
+                  expect(users[0].employeeGrossSalary.full).to.equal(6600);
+                  expect(users[0].employeeGrossSalary.reduced).to.equal(6500);
+                  expect(users[0].numberOfShares).to.equal(3);
+                  expect(users[1].name).to.equal('TestUser2');
+                  expect(users[1].email).to.equal('testUser2@test.com');
+                  expect(users[1].contract).to.equal('Contractor');
+                  expect(users[1].employeeGrossSalary.full).to.equal(10000);
+                  expect(users[1].employeeGrossSalary.reduced).to.equal(7500);
+                  expect(users[1].numberOfShares).to.equal(9);
+                  done();
+                });
               });
-            });
-        });
+          });
       });
     });
   });
@@ -162,25 +158,28 @@ describe('user routes', function() {
     var students, employees, contractors;
 
     before(function(done) {
-      helper.clearDb(function() {
-        helper.factories.createList('Student', 2, function(err, createdStudents) {
+      helper.clearDb()
+        .then(function() {
+          return helper.factories.createList('Student', 2);
+        })
+        .then(function(createdStudents) {
           students = createdStudents;
-          helper.factories.createList('Employee', 2, function(err, createdEmployees) {
-            employees = createdEmployees;
-            helper.factories.createList('Contractor', 2, function(err, createdContractors) {
-              contractors = createdContractors;
-              done();
-            });
-          });
+          return helper.factories.createList('Employee', 2);
+        })
+        .then(function(createdEmployees) {
+          employees = createdEmployees;
+          return helper.factories.createList('Contractor', 2)
+        })
+        .then(function(createdContractors) {
+          contractors = createdContractors;
+          done();
         });
-      });
     });
 
     it("returns 401 if the user is not logged in", function(done) {
       chai.request(app)
         .get('/users')
-        .end(function(err, res) {
-          expect(err).to.be.null;
+        .then(function(res) {
           expect(res).to.have.status(401);
           expect(res).to.be.json;
           expect(res.body.error).to.equal("You must be logged in to perform this action");
@@ -196,8 +195,7 @@ describe('user routes', function() {
             'user': students[0].id
           }
         }))
-        .end(function(err, res) {
-          expect(err).to.be.null;
+        .then(function(res) {
           expect(res).to.have.status(200);
           expect(res).to.be.json;
           done();
@@ -212,7 +210,7 @@ describe('user routes', function() {
             'user': students[0].id
           }
         }))
-        .end(function(err, res) {
+        .then(function(res) {
           var i;
           expect(res.body.length).to.eq(6);
           for (i = 0; i < 2; i++) {
@@ -253,7 +251,7 @@ describe('user routes', function() {
               'user': employees[0].id
             }
           }))
-          .end(function(err, res) {
+          .then(function(res) {
             var i;
             expect(res.body.length).to.eq(6);
 
@@ -288,25 +286,28 @@ describe('user routes', function() {
     var students, employees, contractors;
 
     before(function(done) {
-      helper.clearDb(function() {
-        helper.factories.createList('Student', 2, function(err, createdStudents) {
+      helper.clearDb()
+        .then(function() {
+          return helper.factories.createList('Student', 2);
+        })
+        .then(function(createdStudents) {
           students = createdStudents;
-          helper.factories.createList('Employee', 2, function(err, createdEmployees) {
-            employees = createdEmployees;
-            helper.factories.createList('Contractor', 2, function(err, createdContractors) {
-              contractors = createdContractors;
-              done();
-            });
-          });
+          return helper.factories.createList('Employee', 2);
+        })
+        .then(function(createdEmployees) {
+          employees = createdEmployees;
+          return helper.factories.createList('Contractor', 2)
+        })
+        .then(function(createdContractors) {
+          contractors = createdContractors;
+          done();
         });
-      });
     });
 
     it("is a success", function(done) {
       chai.request(app)
         .get('/users/info')
-        .end(function(err, res) {
-          expect(err).to.be.null;
+        .then(function(res) {
           expect(res).to.have.status(200);
           expect(res).to.be.json;
           done();
@@ -316,7 +317,7 @@ describe('user routes', function() {
     it("returns only general data", function(done) {
       chai.request(app)
         .get('/users/info')
-        .end(function(err, res) {
+        .then(function(res) {
           var i;
           expect(res.body.length).to.eq(3);
 
@@ -345,8 +346,7 @@ describe('user routes', function() {
     it("returns 401 if the user is not logged in", function(done) {
       chai.request(app)
         .get('/users/current')
-        .end(function(err, res) {
-          expect(err).to.be.null;
+        .then(function(res) {
           expect(res).to.have.status(401);
           expect(res).to.be.json;
           expect(res.body.error).to.equal("You must be logged in to perform this action");
@@ -359,12 +359,14 @@ describe('user routes', function() {
       var user;
 
       before(function(done) {
-        helper.clearDb(function() {
-          helper.factories.create('Contractor', function(err, createdUser) {
+        helper.clearDb()
+          .then(function() {
+            return helper.factories.create('Contractor')
+          })
+          .then(function(createdUser) {
             user = createdUser;
             done();
           });
-        });
       });
 
       it("is a success", function(done) {
@@ -375,8 +377,7 @@ describe('user routes', function() {
               'user': user.id
             }
           }))
-          .end(function(err, res) {
-            expect(err).to.be.null;
+          .then(function(res) {
             expect(res).to.have.status(200);
             done();
           });
@@ -390,7 +391,7 @@ describe('user routes', function() {
               'user': user.id
             }
           }))
-          .end(function(err, res) {
+          .then(function(res) {
             expect(res).to.be.json;
             expect(res.body.name).to.equal(user.name);
             expect(res.body.contract).to.equal(user.contract);
