@@ -1,0 +1,10 @@
+{
+  "domain": "localhost:3000",
+  "mountPoint": "",
+  "mongoUri": "localhost/u2i-misc",
+  "mongoUser": "",
+  "mongoPassword": "",
+  "port": 3000,
+  "hmacKey" : "shouldBeDifferent",
+  "sessionSecret": "Im@BitInsecure"
+}

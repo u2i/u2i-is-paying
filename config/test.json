@@ -1,0 +1,7 @@
+{
+  "sessionSecret": "testtesttest",
+  "googleClientId": "1",
+  "googleClientSecret": "secret",
+  "mongoUri": "localhost/u2i-misc-test",
+  "hmacKey" : "ohTheTestTest"
+}
