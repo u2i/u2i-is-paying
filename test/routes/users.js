@@ -10,11 +10,6 @@ var helper = require('../test_helper'),
 
 chai.use(chaiHttp);
 
-if (!global.Promise) {
-  var q = require('q');
-  chai.request.addPromises(q.Promise);
-}
-
 describe('user routes', function() {
   describe("#updateAll", function() {
     it("returns 400 if the data is missing", function(done) {
@@ -165,18 +160,30 @@ describe('user routes', function() {
     before(function(done) {
       helper.clearDb()
         .then(function() {
-          return helper.factories.createList('Student', 2);
+          return helper.factories.create('Student');
         })
-        .then(function(createdStudents) {
-          students = createdStudents;
-          return helper.factories.createList('Employee', 2);
+        .then(function(createdStudent) {
+          students = [createdStudent];
+          return helper.factories.create('Student');
         })
-        .then(function(createdEmployees) {
-          employees = createdEmployees;
-          return helper.factories.createList('Contractor', 2)
+        .then(function(createdStudent) {
+          students.push(createdStudent);
+          return helper.factories.create('Employee');
         })
-        .then(function(createdContractors) {
-          contractors = createdContractors;
+        .then(function(createdEmployee) {
+          employees = [createdEmployee];
+          return helper.factories.create('Employee');
+        })
+        .then(function(createdEmployee) {
+          employees.push(createdEmployee);
+          return helper.factories.create('Contractor')
+        })
+        .then(function(createdContractor) {
+          contractors = [createdContractor];
+          return helper.factories.create('Contractor')
+        })
+        .then(function(createdContractor) {
+          contractors.push(createdContractor);
           done();
         });
     });
@@ -216,8 +223,6 @@ describe('user routes', function() {
           }
         }))
         .end(function(err, res) {
-          console.log(res.body);
-          console.log(employees);
           var i;
           expect(res.body.length).to.eq(6);
           for (i = 0; i < 2; i++) {
@@ -238,7 +243,7 @@ describe('user routes', function() {
             expect(res.body[i].numberOfShares).to.eq(-1);
           }
           for (i = 4; i < 6; i++) {
-            expect(res.body[i].name).to.eq(contractors[i - 4].name);
+            expect(res.body[i].name).to.eq(contractors[i%2].name);
             expect(res.body[i].contract).to.eq('Contractor');
             expect(res.body[i].employeeGrossSalary.full).to.eq(10000);
             expect(res.body[i].employeeGrossSalary.reduced).to.eq(8000);
@@ -270,14 +275,14 @@ describe('user routes', function() {
               expect(res.body[i].numberOfShares).to.eq(0);
             }
             for (i = 2; i < 4; i++) {
-              expect(res.body[i].name).to.eq(employees[i - 2].name);
+              expect(res.body[i].name).to.eq(employees[i%2].name);
               expect(res.body[i].contract).to.eq('Employee');
               expect(res.body[i].employeeGrossSalary.full).to.eq(8000);
               expect(res.body[i].employeeGrossSalary.reduced).to.eq(6000);
               expect(res.body[i].numberOfShares).to.eq(5);
             }
             for (i = 4; i < 6; i++) {
-              expect(res.body[i].name).to.eq(contractors[i - 4].name);
+              expect(res.body[i].name).to.eq(contractors[i%2].name);
               expect(res.body[i].contract).to.eq('Contractor');
               expect(res.body[i].employeeGrossSalary.full).to.eq(10000);
               expect(res.body[i].employeeGrossSalary.reduced).to.eq(8000);
