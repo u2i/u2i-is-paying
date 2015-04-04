@@ -217,6 +217,7 @@ describe('user routes', function() {
         }))
         .end(function(err, res) {
           console.log(res.body);
+          console.log(employees);
           var i;
           expect(res.body.length).to.eq(6);
           for (i = 0; i < 2; i++) {
