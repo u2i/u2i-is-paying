@@ -215,7 +215,7 @@ describe('user routes', function() {
             'user': students[0].id
           }
         }))
-        .then(function(res) {
+        .end(function(err, res) {
           var i;
           expect(res.body.length).to.eq(6);
           for (i = 0; i < 2; i++) {
@@ -243,7 +243,7 @@ describe('user routes', function() {
             expect(res.body[i].numberOfShares).to.eq(10);
           }
           done();
-        }, done);
+        });
     });
 
     it("it shows all salaries if you're an admin", function(done) {
@@ -256,7 +256,7 @@ describe('user routes', function() {
               'user': employees[0].id
             }
           }))
-          .then(function(res) {
+          .end(function(err, res) {
             var i;
             expect(res.body.length).to.eq(6);
 
@@ -282,7 +282,7 @@ describe('user routes', function() {
               expect(res.body[i].numberOfShares).to.eq(10);
             }
             done();
-          }, done);
+          });
       });
     });
   });
