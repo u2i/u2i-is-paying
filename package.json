@@ -6,7 +6,8 @@
   "repository": {},
   "main": "server.js",
   "scripts": {
-    "test": "NODE_ENV=test gulp test"
+    "test": "NODE_ENV=test `npm bin`/gulp test",
+    "coverage": "NODE_ENV=test `npm bin`/istanbul cover -x 'gulpfile.js' `npm bin`/gulp test"
   },
   "author": "Pawel Kozlowski",
   "license": "MIT",
@@ -17,7 +18,7 @@
     "cookie-session": "^1.1.0",
     "express": "^4.12.2",
     "moment": "^2.9.0",
-    "mongoose": "^3.8.25",
+    "mongoose": "^4.0.1",
     "mongoose-timestamp": "^0.4.0",
     "passport": "^0.2.1",
     "passport-google-oauth": "^0.2.0"
@@ -28,6 +29,7 @@
     "chai-http": "^1.0.0",
     "gulp": "^3.8.11",
     "gulp-mocha": "^2.0.0",
+    "istanbul": "^0.3.13",
     "keygrip": "^1.0.1",
     "mocha": "^2.2.1",
     "monky": "^0.6.6",
