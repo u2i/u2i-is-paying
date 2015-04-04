@@ -10,6 +10,11 @@ var helper = require('../test_helper'),
 
 chai.use(chaiHttp);
 
+if (!global.Promise) {
+  var q = require('q');
+  chai.request.addPromises(q.Promise);
+}
+
 describe('user routes', function() {
   describe("#updateAll", function() {
     it("returns 400 if the data is missing", function(done) {
@@ -238,7 +243,7 @@ describe('user routes', function() {
             expect(res.body[i].numberOfShares).to.eq(10);
           }
           done();
-        });
+        }, done);
     });
 
     it("it shows all salaries if you're an admin", function(done) {
@@ -277,7 +282,7 @@ describe('user routes', function() {
               expect(res.body[i].numberOfShares).to.eq(10);
             }
             done();
-          });
+          }, done);
       });
     });
   });
