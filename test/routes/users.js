@@ -23,7 +23,7 @@ describe('user routes', function() {
         .send({
           signature: 'asdf'
         })
-        .then(function(res) {
+        .end(function(err, res) {
           expect(res).to.have.status(400);
           done();
         });
@@ -37,7 +37,7 @@ describe('user routes', function() {
             ['asdf']
           ]
         })
-        .then(function(res) {
+        .end(function(err, res) {
           expect(res).to.have.status(400);
           done();
         });
@@ -52,7 +52,7 @@ describe('user routes', function() {
           ],
           signature: 'qwerty'
         })
-        .then(function(res) {
+        .end(function(err, res) {
           expect(res).to.have.status(401);
           done();
         });
@@ -83,7 +83,7 @@ describe('user routes', function() {
           ],
           signature: 'REGphBS+alcE0YOyG90pZxniV/zXnywIi4tHmTBWUco='
         })
-        .then(function(res) {
+        .end(function(err, res) {
           expect(res).to.have.status(200);
           done();
         });
@@ -136,7 +136,7 @@ describe('user routes', function() {
                 ],
                 signature: 'vEWVc4cZftpTr6qWo0aGSzOnp3AHg2D60lnd+n6ww14='
               })
-              .then(function(res) {
+              .end(function(err, res) {
                 expect(res).to.have.status(200);
                 User.find().sort('name').exec().then(function(users) {
                   expect(users[0].name).to.equal('TestUser1');
@@ -184,7 +184,7 @@ describe('user routes', function() {
     it("returns 401 if the user is not logged in", function(done) {
       chai.request(app)
         .get('/users')
-        .then(function(res) {
+        .end(function(err, res) {
           expect(res).to.have.status(401);
           expect(res).to.be.json;
           expect(res.body.error).to.equal("You must be logged in to perform this action");
@@ -200,7 +200,7 @@ describe('user routes', function() {
             'user': students[0].id
           }
         }))
-        .then(function(res) {
+        .end(function(err, res) {
           expect(res).to.have.status(200);
           expect(res).to.be.json;
           done();
@@ -216,6 +216,7 @@ describe('user routes', function() {
           }
         }))
         .end(function(err, res) {
+          console.log(res.body);
           var i;
           expect(res.body.length).to.eq(6);
           for (i = 0; i < 2; i++) {
@@ -229,7 +230,7 @@ describe('user routes', function() {
           expect(res.body[1].employeeGrossSalary.reduced).to.eq(-1);
           expect(res.body[1].numberOfShares).to.eq(-1);
           for (i = 2; i < 4; i++) {
-            expect(res.body[i].name).to.eq(employees[i - 2].name);
+            expect(res.body[i].name).to.eq(employees[i%2].name);
             expect(res.body[i].contract).to.eq('Employee');
             expect(res.body[i].employeeGrossSalary.full).to.eq(-1);
             expect(res.body[i].employeeGrossSalary.reduced).to.eq(-1);
@@ -312,7 +313,7 @@ describe('user routes', function() {
     it("is a success", function(done) {
       chai.request(app)
         .get('/users/info')
-        .then(function(res) {
+        .end(function(err, res) {
           expect(res).to.have.status(200);
           expect(res).to.be.json;
           done();
@@ -322,7 +323,7 @@ describe('user routes', function() {
     it("returns only general data", function(done) {
       chai.request(app)
         .get('/users/info')
-        .then(function(res) {
+        .end(function(err, res) {
           var i;
           expect(res.body.length).to.eq(3);
 
@@ -351,7 +352,7 @@ describe('user routes', function() {
     it("returns 401 if the user is not logged in", function(done) {
       chai.request(app)
         .get('/users/current')
-        .then(function(res) {
+        .end(function(err, res) {
           expect(res).to.have.status(401);
           expect(res).to.be.json;
           expect(res.body.error).to.equal("You must be logged in to perform this action");
@@ -396,7 +397,7 @@ describe('user routes', function() {
               'user': user.id
             }
           }))
-          .then(function(res) {
+          .end(function(err, res) {
             expect(res).to.be.json;
             expect(res.body.name).to.equal(user.name);
             expect(res.body.contract).to.equal(user.contract);
