@@ -389,7 +389,7 @@ describe('user routes', function() {
               'user': user.id
             }
           }))
-          .then(function(res) {
+          .end(function(err, res) {
             expect(res).to.have.status(200);
             done();
           });
